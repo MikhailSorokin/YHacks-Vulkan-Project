@@ -99,6 +99,8 @@ private:
 	VDeleter<VkInstance> instance{ vkDestroyInstance };
 	VkSubpassDescription subPass{};
 	VkAttachmentDescription colorAttachment{};
+	std::vector<VDeleter<VkFramebuffer>> swapChainFramebuffers;
+	VDeleter<VkRenderPass> renderPass{};
 
 	void createAndRunWindow() {
 		Window window(800, 600, "YHacks Yoo");
@@ -207,7 +209,7 @@ private:
 
 		// Render Pass
 
-		VDeleter<VkRenderPass> renderPass{ device, vkDestroyRenderPass };
+		renderPass = VDeleter<VkRenderPass>{ device, vkDestroyRenderPass };
 
 		VkRenderPassCreateInfo renderPassInfo = {};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -266,6 +268,29 @@ private:
 		}
 	}
 
+	void createFramebuffers() {
+		swapChainFramebuffers.resize(swapChainImageViews.size(), VDeleter<VkFramebuffer>{device, vkDestroyFramebuffer});
+
+		for (size_t i = 0; i < swapChainImageViews.size(); i++) {
+			VkImageView attachments[] = {
+				swapChainImageViews[i]
+			};
+
+			VkFramebufferCreateInfo framebufferInfo = {};
+			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+			framebufferInfo.renderPass = renderPass;
+			framebufferInfo.attachmentCount = 1;
+			framebufferInfo.pAttachments = attachments;
+			framebufferInfo.width = swapChainExtent.width;
+			framebufferInfo.height = swapChainExtent.height;
+			framebufferInfo.layers = 1;
+
+			if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, swapChainFramebuffers[i].replace()) != VK_SUCCESS) {
+				throw std::runtime_error("failed to create framebuffer!");
+			}
+		}
+	}
+
 	void initVulkan() {
 		if (enableValidationLayers && ifLayerValidationSupport()) {
 			throw runtime_error("validation layers requested, but not available!");
@@ -317,6 +342,8 @@ private:
 		// TODO for clarity, break initVulkan() logic up into separate functions.
 		createRenderPass();
 		createGraphicsPipeline();
+		createFramebuffers();
+
 	}
 
 	bool ifLayerValidationSupport() {
