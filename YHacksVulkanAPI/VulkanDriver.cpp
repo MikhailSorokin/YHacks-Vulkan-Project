@@ -1,3 +1,4 @@
+#include <fstream>
 #include "VulkanDriver.h"
 #include "Window.h"
 
@@ -10,6 +11,22 @@ const bool enableValidationLayers = false;
 #else
 const bool enableValidationLayers = true;
 #endif
+
+static std::vector<char> readFile(const std::string& filename) {
+	std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+	if (!file.is_open()) {
+		throw std::runtime_error("failed to open file!");
+	}
+
+	size_t fileSize = (size_t)file.tellg();
+	std::vector<char> buffer(fileSize);
+	file.seekg(0);
+	file.read(buffer.data(), fileSize);
+	file.close();
+
+	return buffer;
+}
 
 ///Used to clean up resources used throughout VulkanDriver class
 template <typename T>
@@ -86,6 +103,32 @@ private:
 		window.updateMainLoop();
 	}
 
+	void createShaderModule(const std::vector<char>& code, VDeleter<VkShaderModule>& shaderModule) {
+		VkShaderModuleCreateInfo createInfo = {};
+		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		createInfo.codeSize = code.size();
+		createInfo.pCode = (uint32_t*)code.data();
+		if (vkCreateShaderModule(device, &createInfo, nullptr, shaderModule.replace()) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create shader module!");
+		}
+	}
+
+	void createGraphicsPipeline() {
+		auto vertShaderCode = readFile("shaders/vert.spv");
+		auto fragShaderCode = readFile("shaders/frag.spv");
+		VDeleter<VkShaderModule> vertShaderModule{ device, vkDestroyShaderModule };
+		VDeleter<VkShaderModule> fragShaderModule{ device, vkDestroyShaderModule };
+
+		createShaderModule(vertShaderCode, vertShaderModule);
+		createShaderModule(fragShaderCode, fragShaderModule);
+
+		VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+		vertShaderStageInfo.module = vertShaderModule;
+		vertShaderStageInfo.pName = "main";
+	}
+
 	void initVulkan() {
 		if (enableValidationLayers && ifLayerValidationSupport()) {
 			throw runtime_error("validation layers requested, but not available!");
@@ -133,6 +176,9 @@ private:
 		for (const auto& extension : extensions) {
 			cout << "This is a reccomended extension name: " << extension.extensionName << endl;
 		}
+
+		// TODO for clarity, break initVulkan() logic up into separate functions.
+		createGraphicsPipeline();
 	}
 
 	bool ifLayerValidationSupport() {
