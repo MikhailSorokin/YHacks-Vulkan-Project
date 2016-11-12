@@ -220,7 +220,7 @@ private:
 			throw std::runtime_error("failed to create render pass!");
 		}
 
-		// Pipeline Layout
+		// Create the Pipeline
 
 		VDeleter<VkPipelineLayout> pipelineLayout{ device, vkDestroyPipelineLayout };
 
@@ -236,6 +236,34 @@ private:
 			throw std::runtime_error("failed to create pipeline layout!");
 		}
 
+		VkGraphicsPipelineCreateInfo pipelineInfo = {};
+		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		pipelineInfo.stageCount = 2;
+		pipelineInfo.pStages = shaderStages;
+
+		pipelineInfo.pVertexInputState = &vertexInputInfo;
+		pipelineInfo.pInputAssemblyState = &inputAssembly;
+		pipelineInfo.pViewportState = &viewportState;
+		pipelineInfo.pRasterizationState = &rasterizer;
+		//pipelineInfo.pMultisampleState = &multisampling;
+		pipelineInfo.pMultisampleState =  nullptr;
+		pipelineInfo.pDepthStencilState = nullptr; // Optional
+		//pipelineInfo.pColorBlendState = &colorBlending;
+		pipelineInfo.pColorBlendState = nullptr;
+		pipelineInfo.pDynamicState = nullptr; // Optional
+
+		pipelineInfo.layout = pipelineLayout;
+
+		pipelineInfo.renderPass = renderPass;
+		pipelineInfo.subpass = 0;
+		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+		pipelineInfo.basePipelineIndex = -1; // Optional
+
+		VDeleter<VkPipeline> graphicsPipeline{ device, vkDestroyPipeline };
+
+		if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, graphicsPipeline.replace()) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create graphics pipeline!");
+		}
 	}
 
 	void initVulkan() {
