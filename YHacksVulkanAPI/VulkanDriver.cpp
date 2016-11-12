@@ -1,14 +1,15 @@
 #include "VulkanDriver.h"
 #include "Window.h"
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/vec4.hpp>
-#include <glm/mat4x4.hpp>
+const std::vector<const char*> validationLayers = {
+	"VK_LAYER_LUNARG_standard_validation"
+};
 
-#include <stdexcept> //handle exceptions
-#include <functional>
-
+#ifdef NDEBUG
+const bool enableValidationLayers = false;
+#else
+const bool enableValidationLayers = true;
+#endif
 
 ///Used to clean up resources used throughout VulkanDriver class
 template <typename T>
@@ -86,11 +87,77 @@ private:
 	}
 
 	void initVulkan() {
-		
-		uint32_t extensionCount = 0;
-		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+		if (enableValidationLayers && ifLayerValidationSupport()) {
+			throw runtime_error("validation layers requested, but not available!");
+		}
 
-		cout << extensionCount << " extensions supported" << endl;
+		//May optimize our specific application
+		VkApplicationInfo appInfo = {};
+		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+		appInfo.pApplicationName = "Triangle Plox Load";
+		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+		appInfo.pEngineName = "No Engine";
+		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+		appInfo.apiVersion = VK_API_VERSION_1_0;
+
+		//Not optional. Used to tell driver which global extensions and validation layers to use.
+		VkInstanceCreateInfo createInfo = {};
+		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+		createInfo.pApplicationInfo = &appInfo;
+
+		//How many extensions can we get from GLFW to communicate with Vulkan?
+		unsigned int glfwExtensionCount = 0;
+		const char** glfwExtensions;
+
+		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+		createInfo.enabledExtensionCount = glfwExtensionCount;
+		createInfo.ppEnabledExtensionNames = glfwExtensions;
+		createInfo.enabledLayerCount = 0;
+
+		//Can finally create instance
+		VkResult result = vkCreateInstance(&createInfo, nullptr, instance.replace());
+		if (result != VK_SUCCESS) {
+			//This will make it crash on non-vulkan supported computers!
+			throw runtime_error("Failed to create a Vulkan instance!");
+		}
+
+		//Used to see how many extensions we have
+		uint32_t extensionCount = 0;
+
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+		vector<VkExtensionProperties> extensions(extensionCount);
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
+
+
+		for (const auto& extension : extensions) {
+			cout << "This is a reccomended extension name: " << extension.extensionName << endl;
+		}
+	}
+
+	bool ifLayerValidationSupport() {
+		uint32_t layerCount;
+		vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+		vector<VkLayerProperties> availableLayerProperties;
+		vkEnumerateInstanceLayerProperties(&layerCount, availableLayerProperties.data());
+
+		for (const char* layerName : validationLayers) {
+			bool layerFound = false;
+
+			for (const auto& layerProperties : availableLayerProperties) {
+				if (strcmp(layerName, layerProperties.layerName) == 0) {
+					layerFound = true;
+					break;
+				}
+			}
+
+			if (!layerFound) {
+				return false;
+			}
+		}
+	
+		return true;
 	}
 };
 
