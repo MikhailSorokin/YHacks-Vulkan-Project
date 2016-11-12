@@ -1,5 +1,6 @@
 #include "Game.h"
-#include "../Scene/Scene.h"
+#include "Components/Scene/Scene.h"
+#include "Components/Simulation/Simulation.h"
 
 Game::Game() {
 

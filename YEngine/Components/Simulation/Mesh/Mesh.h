@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 
-#include "../../Utilities/Transform/Transform.h"
+#include "../Utilities/Transform/Transform.h"
 #include "../Mesh/Polygon/Polygon.h"
 #include "../Mesh/Vertex/Vertex.h"
 
@@ -13,7 +13,7 @@ class Mesh {
 public:
 
 	Mesh();
-	Mesh(Mesh mesh);
+	Mesh(const Mesh& mesh);
 	~Mesh();
 
 	void transform(Transform* transform);

@@ -6,8 +6,8 @@
 
 #include "Camera/Camera.h"
 #include "Effect/Effect.h"
-#include "../Engine/Engine.h"
-#include "../Mesh/Mesh.h"
+#include "../../Engine/Engine.h"
+#include "Mesh/Mesh.h"
 
 class Simulation : public Engine {
 

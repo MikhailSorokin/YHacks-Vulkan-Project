@@ -3,6 +3,12 @@
 
 class Vertex {
 
+private:
+
+	Vector3 position;
+	Vector3 transformation;
+
+	Vector3 normal;
 };
 
 #endif
