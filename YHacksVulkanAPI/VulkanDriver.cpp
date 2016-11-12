@@ -78,12 +78,15 @@ public:
 
 private:
 
+	VDeleter<VkInstance> instance{ vkDestroyInstance };
+
 	void createAndRunWindow() {
 		Window window(800, 600, "YHacks Yoo");
 		window.updateMainLoop();
 	}
 
 	void initVulkan() {
+		
 		uint32_t extensionCount = 0;
 		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 

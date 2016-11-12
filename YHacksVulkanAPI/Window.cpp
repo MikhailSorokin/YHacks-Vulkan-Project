@@ -11,7 +11,6 @@ Window::Window(int m_width, int m_height, char* m_name)
 	}
 }
 
-
 Window::~Window()
 {
 	glfwTerminate();
@@ -31,8 +30,38 @@ bool Window::canInitWindowComponents() {
 	return true;
 }
 
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
+	if (key == 256) {
+		exit(0);
+	}
+	else {
+		std::cout << "PRESSING: " << key << std::endl;
+	}
+}
+
+/*void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_E && action == GLFW_PRESS)
+		activate_airship();
+}*/
+
+
 void Window::updateMainLoop() {
 	while (!glfwWindowShouldClose(m_window)) {
 		glfwPollEvents();
+		
+		int state = glfwGetKey(m_window, GLFW_KEY_E);
+		//cout << state << " pressed.\n";
+		if (state == GLFW_PRESS) {
+			cout << state << " pressed.\n";
+		}
+		int k;
+		glfwSetKeyCallback(m_window, key_callback);
+
+		//glfwSetInputMode(m_window, GLFW_STICKY_KEYS, 1);
+
+		//double xpos, ypos;
+		//glfwGetCursorPos(m_window, &xpos, &ypos);
+		//cout << "Position: " << xpos << ypos;
 	}
 }
