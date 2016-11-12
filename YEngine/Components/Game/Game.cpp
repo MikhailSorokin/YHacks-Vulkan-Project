@@ -6,6 +6,7 @@ Game::Game() {
 	setID("Game");
 
 	add(new Scene());
+	add(new Simulation());
 }
 
 Game::~Game() {
