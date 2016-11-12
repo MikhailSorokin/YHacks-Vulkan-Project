@@ -18,6 +18,8 @@ public:
 
 	void update();
 
+	Camera* getCamera();
+
 	void addMesh(Mesh* mesh);
 	void addEffect(Effect* effect);
 

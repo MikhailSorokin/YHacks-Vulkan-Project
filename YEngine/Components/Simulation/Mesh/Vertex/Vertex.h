@@ -3,12 +3,30 @@
 
 class Vertex {
 
+public:
+
+	Vertex();
+	Vertex(float x, float y, float z);
+	Vertex(const Vertex& vertex);
+
+	~Vertex();
+
+	void setPosition(Vector3* position);
+	void setTransformation(Vector3* transformation);
+
+	void setNormal(Vector3* normal);
+
+	Vector3* getPositon();
+	Vector3* getTransformation();
+
+	Vector3* getNormal();
+
 private:
 
-	Vector3 position;
-	Vector3 transformation;
+	Vector3* position;
+	Vector3* transformation;
 
-	Vector3 normal;
+	Vector3* normal;
 };
 
 #endif

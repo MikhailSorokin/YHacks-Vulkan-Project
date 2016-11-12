@@ -7,12 +7,29 @@
 
 class Polygon {
 
+public:
+
+	Polygon();
+	Polygon(const Polygon& polygon);
+
+	~Polygon();
+
+	void setMaterial(Material* material);
+
+	void addVertex(int vertex);
+	void setTexCoord(int vertex, Vector3* texCoord);
+
+	Material* getMaterial();
+
+	std::vector<int> getVertices();
+	std::vector<Vector3*> getTexCoords();
+
 private:
 
-	Material material;
+	Material* material;
 
-	std::vector<int> vertexIndices;
-	std::vector<Vector3> texCoords;
+	std::vector<int> vertices;
+	std::vector<Vector3*> texCoords;
 };
 
 #endif

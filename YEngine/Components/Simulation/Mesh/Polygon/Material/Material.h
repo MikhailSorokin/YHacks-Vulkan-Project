@@ -5,11 +5,23 @@
 
 class Material {
 
+public:
+
+	Material();
+	Material(std::string texture);
+
+	~Material();
+
+	void setTexture(std::string texture);
+	void setColor(Color* color);
+
+	std::string getTexture();
+	Color* getColor();
 
 private:
 
-	std::string material;
-	Color color;
+	std::string texture;
+	Color* color;
 };
 
 #endif

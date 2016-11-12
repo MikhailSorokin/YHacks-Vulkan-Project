@@ -34,6 +34,11 @@ public:
 	bool isVisible();
 	bool isDestroyed();
 
+	static const int RENDER_MODE_3D = 0;
+	static const int RENDER_MODE_2D = 1;
+	static const int RENDER_MODE_2D_ASPECT_OFF = 2;
+	static const int RENDER_MODE_2D_ABSOLUTE = 3;
+
 private:
 
 	std::vector<Transform*> transforms;
