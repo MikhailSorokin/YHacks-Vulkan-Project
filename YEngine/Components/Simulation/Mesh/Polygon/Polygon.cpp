@@ -4,6 +4,7 @@
 #include "Polygon.h"
 
 #include "Material/Material.h"
+#include "../../Utilities/Vector3/Vector3.h"
 #include "../Vertex/Vertex.h"
 
 Polygon::Polygon() {
@@ -11,7 +12,7 @@ Polygon::Polygon() {
 	material = new Material();
 
 	vertices = std::vector<int>();
-	texCoords = std::vector<Vector3>();
+	texCoords = std::vector<Vector3*>();
 }
 
 Polygon::Polygon(const Polygon& polygon) {
@@ -19,7 +20,7 @@ Polygon::Polygon(const Polygon& polygon) {
 	material = new Material();
 
 	vertices = std::vector<int>();
-	texCoords = std::vector<Vector3>();
+	texCoords = std::vector<Vector3*>();
 
 	// STUB
 }

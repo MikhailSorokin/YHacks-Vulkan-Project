@@ -49,8 +49,8 @@ public:
 
 private:
 
-	std::string renderMode;
-	std::string aspectMode;
+	int renderMode;
+	int aspectMode;
 
 	std::vector<Transform*> transforms;
 

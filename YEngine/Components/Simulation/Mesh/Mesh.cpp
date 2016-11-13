@@ -2,8 +2,8 @@
 
 #include "Mesh.h"
 #include "Polygon/Polygon.h"
-#include "Transform/Transform.h"
-#include "Vertex.h"
+#include "../Utilities/Transform/Transform.h"
+#include "Vertex/Vertex.h"
 
 Mesh::Mesh() {
 
