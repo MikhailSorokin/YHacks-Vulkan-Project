@@ -55,13 +55,11 @@ void Window::updateMainLoop() {
 		if (state == GLFW_PRESS) {
 			cout << state << " pressed.\n";
 		}
-		int k;
 		glfwSetKeyCallback(m_window, key_callback);
 
-		drawFrame();
+		//drawFrame();
 
 		//glfwSetInputMode(m_window, GLFW_STICKY_KEYS, 1);
-
 		//double xpos, ypos;
 		//glfwGetCursorPos(m_window, &xpos, &ypos);
 		//cout << "Position: " << xpos << ypos;

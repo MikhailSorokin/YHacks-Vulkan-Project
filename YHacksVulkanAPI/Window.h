@@ -1,16 +1,14 @@
-#pragma once
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <iostream>
 
 using namespace std;
+#pragma once
 
 class Window
 {
 public:
-	int m_width;
-	int m_height;
-	char* m_title;
+	GLFWwindow* m_window;
 	uint32_t extensionCount;
 
 	Window(int m_width, int m_height, char* name);
@@ -18,8 +16,10 @@ public:
 	void updateMainLoop();
 
 private:
+	int m_width;
+	int m_height;
+	char* m_title;
 	bool canInitWindowComponents();
-	GLFWwindow* m_window;
 
 };
 
