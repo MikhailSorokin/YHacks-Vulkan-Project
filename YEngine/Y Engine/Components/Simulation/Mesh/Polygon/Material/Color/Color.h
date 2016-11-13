@@ -3,6 +3,13 @@
 
 class Color {
 
+public:
+
+	Color();
+	Color(float red, float green, float blue);
+	Color(float red, float green, float blue, float alpha);
+	Color(const Color& color);
+
 private:
 
 	float red;

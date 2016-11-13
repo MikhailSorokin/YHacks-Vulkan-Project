@@ -1,6 +1,8 @@
 #ifndef Y_ENGINE_COMPONENTS_SIMULATION_MESH_VERTEX_VERTEX_H_
 #define Y_ENGINE_COMPONENTS_SIMULATION_MESH_VERTEX_VERTEX_H_
 
+#include "../../Utilities/Vector3/Vector3.h"
+
 class Vertex {
 
 public:
@@ -16,7 +18,7 @@ public:
 
 	void setNormal(Vector3* normal);
 
-	Vector3* getPositon();
+	Vector3* getPosition();
 	Vector3* getTransformation();
 
 	Vector3* getNormal();

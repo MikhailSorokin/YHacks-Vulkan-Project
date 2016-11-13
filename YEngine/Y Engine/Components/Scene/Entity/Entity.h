@@ -20,6 +20,7 @@ public:
 	void destroy();
 
 	void addChild(Entity* child);
+	void addScript(Script* script);
 
 	void tag(std::string tag);
 	void untag(std::string tag);
@@ -34,14 +35,6 @@ public:
 
 	bool isTagged(std::string tag);
 
-protected:
-
-	virtual void onInitialize();
-	virtual void onUpdate();
-	virtual void onActivate();
-	virtual void onDeactivate();
-	virtual void onDestroy();
-
 private:
 
 	void matchParentStatus(bool active);
@@ -53,6 +46,7 @@ private:
 	bool destroyed;
 
 	std::vector<Entity*> children;
+	std::vector<Script*> scripts;
 
 	std::vector<std::string> tags;
 };
