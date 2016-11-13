@@ -58,6 +58,8 @@ void Window::updateMainLoop() {
 		int k;
 		glfwSetKeyCallback(m_window, key_callback);
 
+		drawFrame();
+
 		//glfwSetInputMode(m_window, GLFW_STICKY_KEYS, 1);
 
 		//double xpos, ypos;
