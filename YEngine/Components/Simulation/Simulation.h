@@ -18,14 +18,17 @@ public:
 
 	void update();
 
-	Camera* getCamera();
-
 	void addMesh(Mesh* mesh);
 	void addEffect(Effect* effect);
 
+	Camera* getCamera();
+
+	std::vector<Mesh*> getMeshes();
+	std::vector<Effect*> getEffects();
+
 private:
 
-	Camera camera;
+	Camera* camera;
 
 	std::vector<Mesh*> meshes;
 	std::vector<Effect*> effects;
