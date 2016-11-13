@@ -3,15 +3,6 @@
 
 #include "../../Y Engine/Components/Simulation/Mesh/Mesh.h"
 
-class Skybox {
-
-public:
-
-	Skybox(std::string texture);
-
-private:
-
-	Mesh* mesh;
-};
+Mesh* generateSkybox(std::string texture);
 
 #endif

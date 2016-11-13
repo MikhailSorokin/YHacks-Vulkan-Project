@@ -13,6 +13,7 @@ Entity::Entity() {
 	destroyed = false;
 
 	children = std::vector<Entity*>();
+	scripts = std::vector<Entity*>();
 }
 
 Entity::~Entity() {
@@ -27,7 +28,9 @@ void Entity::initialize(Engine* engine) {
 	initialized = true;
 	this->engine = engine;
 
-	onInitialize();
+	for(int i = 0; i < scripts.size(); i++) {
+		scripts.at(i)->onInitialize();
+	}
 
 	for(unsigned int i = 0; i < children.size(); i++) {
 		children.at(i)->initialize(engine);
@@ -39,7 +42,15 @@ void Entity::update() {
 	if(!active || destroyed)
 		return;
 
-	onUpdate();
+	for(int i = 0; i < scripts.size(); i++) {
+
+		scripts.at(i)->onUpdate();
+
+		if(scripts.at(i)->isRemoved()) {
+			scripts.erase(scripts.begin() + i);
+			i--;
+		}
+	}
 
 	for(unsigned int i = 0; i < children.size(); i++) {
 
@@ -75,11 +86,17 @@ void Entity::deactivate() {
 void Entity::matchParentStatus(bool active) {
 
 	if(active) {
-		onActivate();
+
+		for(int i = 0; i < scripts.size(); i++) {
+			scripts.at(i)->onActivate();
+		}
 	}
 
 	else {
-		onDeactivate();
+
+		for(int i = 0; i < scripts.size(); i++) {
+			scripts.at(i)->onDeactivate();
+		}
 	}
 
 	for(unsigned int i = 0; i < children.size(); i++) {
@@ -94,33 +111,24 @@ void Entity::destroy() {
 
 	destroyed = true;
 
+	for(int i = 0; i < scripts.size(); i++) {
+		scripts.at(i)->onDestroy();
+	}
+
 	for(unsigned int i = 0; i < children.size(); i++) {
 		children.at(i)->destroy();
 	}
 }
 
-void Entity::onInitialize() {
-
-}
-
-void Entity::onUpdate() {
-
-}
-
-void Entity::onActivate() {
-
-}
-
-void Entity::onDeactivate() {
-
-}
-
-void Entity::onDestroy() {
-
-}
-
 void Entity::addChild(Entity* child) {
 	children.push_back(child);
+}
+
+void Entity::addScript(Script* script) {
+
+	script->setEntity(this);
+
+	scripts.push_back(script);
 }
 
 void Entity::tag(std::string tag) {
