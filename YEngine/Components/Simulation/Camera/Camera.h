@@ -12,6 +12,8 @@ public:
 	Camera();
 	~Camera();
 
+	void update();
+
 	void transform(Transform transform);
 
 	std::vector<Transform*> getTransforms();

@@ -6,8 +6,8 @@ class Vector3 {
 public:
 
 	Vector3();
-	Vector3(float x, float y, float z);
 	Vector3(const Vector3& vector3);
+	Vector3(float x, float y, float z);
 
 	~Vector3();
 
@@ -28,6 +28,8 @@ public:
 	void decrementX(float x);
 	void decrementY(float y);
 	void decrementZ(float z);
+
+	void setMagnitude(float magnitude);
 
 	float getX();
 	float getY();
