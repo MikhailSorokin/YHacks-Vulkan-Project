@@ -171,7 +171,7 @@ struct UniformBufferObject {
 	glm::mat4 proj;
 };
 
-const std::vector<Vertex> vertices = {
+const std::vector<Vertex> vertices1 = {
 	{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 0.0f, 0.0f } },
 	{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 1.0f, 0.0f } },
 	{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 1.0f, 1.0f } },
@@ -181,6 +181,18 @@ const std::vector<Vertex> vertices = {
 	{ { 0.5f, -0.5f, -0.5f },{ 0.0f, 1.0f, 0.0f },{ 1.0f, 0.0f } },
 	{ { 0.5f, 0.5f, -0.5f },{ 0.0f, 0.0f, 1.0f },{ 1.0f, 1.0f } },
 	{ { -0.5f, 0.5f, -0.5f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 1.0f } }
+};
+
+const std::vector<Vertex> vertices2 = {
+	{ { -1.5f, -1.5f, 1.1f },{ 1.0f, 0.0f, 0.0f },{ 0.0f, 0.0f } },
+	{ { 1.5f, -1.5f, 1.1f },{ 0.0f, 1.0f, 0.0f },{ 1.0f, 0.0f } },
+	{ { 1.5f, 1.5f, 1.1f },{ 0.0f, 0.0f, 1.0f },{ 1.0f, 1.0f } },
+	{ { -1.5f, 1.5f, 1.1f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 1.0f } },
+
+	{ { -1.5f, -1.5f, -1.5f },{ 1.0f, 0.0f, 0.0f },{ 0.0f, 0.0f } },
+	{ { 1.5f, -1.5f, -1.5f },{ 0.0f, 1.0f, 0.0f },{ 1.0f, 0.0f } },
+	{ { 1.5f, 1.5f, -1.5f },{ 0.0f, 0.0f, 1.0f },{ 1.0f, 1.0f } },
+	{ { -1.5f, 1.5f, -1.5f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 1.0f } }
 };
 
 const std::vector<uint16_t> indices = {
@@ -232,8 +244,10 @@ private:
 	VDeleter<VkImageView> textureImageView{ device, vkDestroyImageView };
 	VDeleter<VkSampler> textureSampler{ device, vkDestroySampler };
 
-	VDeleter<VkBuffer> vertexBuffer{ device, vkDestroyBuffer };
-	VDeleter<VkDeviceMemory> vertexBufferMemory{ device, vkFreeMemory };
+	VDeleter<VkBuffer> vertexBuffer1{ device, vkDestroyBuffer };
+	VDeleter<VkBuffer> vertexBuffer2{ device, vkDestroyBuffer };
+	VDeleter<VkDeviceMemory> vertexBuffer1Memory{ device, vkFreeMemory };
+	VDeleter<VkDeviceMemory> vertexBuffer2Memory{ device, vkFreeMemory };
 	VDeleter<VkBuffer> indexBuffer{ device, vkDestroyBuffer };
 	VDeleter<VkDeviceMemory> indexBufferMemory{ device, vkFreeMemory };
 
@@ -278,7 +292,8 @@ private:
 		createTextureImage();
 		createTextureImageView();
 		createTextureSampler();
-		createVertexBuffer();
+		createVertexBuffer(vertices1, vertexBuffer1, vertexBuffer1Memory);
+		createVertexBuffer(vertices2, vertexBuffer2, vertexBuffer2Memory);
 		createIndexBuffer();
 		createUniformBuffer();
 		createDescriptorPool();
@@ -981,7 +996,7 @@ private:
 		endSingleTimeCommands(commandBuffer);
 	}
 
-	void createVertexBuffer() {
+	void createVertexBuffer(const std::vector<Vertex> &vertices, VDeleter<VkBuffer> &vertexBuffer, VDeleter<VkDeviceMemory> &vertexBufferMemory) {
 		VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
 		VDeleter<VkBuffer> stagingBuffer{ device, vkDestroyBuffer };
@@ -1205,15 +1220,19 @@ private:
 
 			vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-			vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-
-			VkBuffer vertexBuffers[] = { vertexBuffer };
-			VkDeviceSize offsets[] = { 0 };
-			vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
+			vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline); // the standard graphics pipeline can handle multiple vertex buffers without modification, right?
 
 			vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
 			vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
+
+			VkBuffer vertexBuffers[] = { vertexBuffer1, vertexBuffer2 };
+			VkDeviceSize offsets[] = { 0 };
+			vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
+
+			vkCmdDrawIndexed(commandBuffers[i], indices.size(), 1, 0, 0, 0);
+
+			vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, &vertexBuffers[1], offsets);
 
 			vkCmdDrawIndexed(commandBuffers[i], indices.size(), 1, 0, 0, 0);
 
