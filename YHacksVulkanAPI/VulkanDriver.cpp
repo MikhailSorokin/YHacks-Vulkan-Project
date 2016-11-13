@@ -171,7 +171,8 @@ struct UniformBufferObject {
 	glm::mat4 proj;
 };
 
-const std::vector<Vertex> vertices1 = {
+std::vector<Vertex> vertices1 = {
+	/*
 	{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 0.0f, 0.0f } },
 	{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 1.0f, 0.0f } },
 	{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 1.0f, 1.0f } },
@@ -181,9 +182,10 @@ const std::vector<Vertex> vertices1 = {
 	{ { 0.5f, -0.5f, -0.5f },{ 0.0f, 1.0f, 0.0f },{ 1.0f, 0.0f } },
 	{ { 0.5f, 0.5f, -0.5f },{ 0.0f, 0.0f, 1.0f },{ 1.0f, 1.0f } },
 	{ { -0.5f, 0.5f, -0.5f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 1.0f } }
+	*/
 };
 
-const std::vector<Vertex> vertices2 = {
+std::vector<Vertex> vertices2 = {
 	{ { -1.5f, -1.5f, 1.1f },{ 1.0f, 0.0f, 0.0f },{ 0.0f, 0.0f } },
 	{ { 1.5f, -1.5f, 1.1f },{ 0.0f, 1.0f, 0.0f },{ 1.0f, 0.0f } },
 	{ { 1.5f, 1.5f, 1.1f },{ 0.0f, 0.0f, 1.0f },{ 1.0f, 1.0f } },
@@ -195,10 +197,55 @@ const std::vector<Vertex> vertices2 = {
 	{ { -1.5f, 1.5f, -1.5f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 1.0f } }
 };
 
-const std::vector<uint16_t> indices = {
-	0, 1, 2, 2, 3, 0,
-	4, 5, 6, 6, 7, 4
+std::vector<uint16_t> indices = {
 };
+
+Vertex sample(float u, float v) {
+	float R = 4;
+	float scale = .25f;
+	float twists = 1.f;
+	float pi = 3.14159f;
+	float theta = u + (1 / twists) * pi;
+
+	Vertex vert;
+	vert.pos.x = v * cos(u) * (R + cos(u * twists)) + (1 - v) * (cos(u) * R + cos(theta * twists));
+	vert.pos.y = v * sin(u) * (R + cos(u * twists)) + (1 - v) * (sin(u) * R + cos(theta * twists));
+	vert.pos.z = v * sin(u * twists) + (1 - v) * sin(theta * twists);
+	vert.pos.x *= scale;
+	vert.pos.y *= scale;
+	vert.pos.z *= scale;
+
+
+	vert.color = { 1.0f, 1.0f, 1.0f },
+		vert.texCoord = { 8 * u / (2 * 3.14159f), 1 - v };
+	return vert;
+}
+
+void populateVerts() {
+	int n = sqrt(10000);
+	for (int ui = 0; ui < n; ui++) {
+		for (int vi = 0; vi < n; vi++) {
+			float u = ui * 2 * 3.14159 / n;
+			float v = vi / (float)n;
+			float incU = 2 * 3.14159 / n;
+			float incV = 1 / (float)n;
+
+			uint16_t index = vertices1.size();
+			vertices1.push_back(sample(u, v));
+			vertices1.push_back(sample(u + incU, v));
+			vertices1.push_back(sample(u, v + incV));
+			vertices1.push_back(sample(u + incU, v + incV));
+
+			indices.push_back(index);
+			indices.push_back(index + 1);
+			indices.push_back(index + 2);
+
+			indices.push_back(index + 1);
+			indices.push_back(index + 3);
+			indices.push_back(index + 2);
+		}
+	}
+}
 
 class HelloTriangleApplication {
 public:
@@ -276,6 +323,7 @@ private:
 	}
 
 	void initVulkan() {
+		populateVerts();
 		createInstance();
 		setupDebugCallback();
 		createSurface();
@@ -667,7 +715,7 @@ private:
 		rasterizer.rasterizerDiscardEnable = VK_FALSE;
 		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizer.lineWidth = 1.0f;
-		rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+		rasterizer.cullMode = VK_CULL_MODE_NONE;
 		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 
@@ -1232,9 +1280,9 @@ private:
 
 			vkCmdDrawIndexed(commandBuffers[i], indices.size(), 1, 0, 0, 0);
 
-			vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, &vertexBuffers[1], offsets);
+			//vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, &vertexBuffers[1], offsets);
 
-			vkCmdDrawIndexed(commandBuffers[i], indices.size(), 1, 0, 0, 0);
+			//vkCmdDrawIndexed(commandBuffers[i], indices.size(), 1, 0, 0, 0);
 
 			vkCmdEndRenderPass(commandBuffers[i]);
 
