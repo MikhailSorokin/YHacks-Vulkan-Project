@@ -158,13 +158,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="VDeleter.h" />
-    <ClInclude Include="VulkanDevicePicker.h" />
-    <ClInclude Include="VulkanDriver.h" />
-    <ClInclude Include="VulkanInstanceCreation.h" />
-    <ClInclude Include="Window.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="VulkanDriver.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
