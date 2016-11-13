@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Material/Material.h"
+#include "../Vertex/Vertex.h"
 
 class Polygon {
 

@@ -16,7 +16,7 @@ public:
 
 	void setNormal(Vector3* normal);
 
-	Vector3* getPositon();
+	Vector3* getPosition();
 	Vector3* getTransformation();
 
 	Vector3* getNormal();

@@ -12,9 +12,19 @@ class Mesh {
 
 public:
 
+	static const int RENDER_MODE_3D = 1;
+	static const int RENDER_MODE_2D = 2;
+
+	static const int ASPECT_MODE_ON = 1;
+	static const int ASPECT_MODE_OFF = 2;
+	static const int ASPECT_MODE_ABSOLUTE = 3;
+
 	Mesh();
 	Mesh(const Mesh& mesh);
 	~Mesh();
+
+	void setRenderMode(int renderMode);
+	void setAspectMode(int aspectMode);
 
 	void transform(Transform* transform);
 
@@ -26,6 +36,9 @@ public:
 
 	void destroy();
 
+	int getRenderMode();
+	int getAspectMode();
+
 	std::vector<Transform*> getTransforms();
 
 	std::vector<Vertex*> getVertices();
@@ -34,12 +47,10 @@ public:
 	bool isVisible();
 	bool isDestroyed();
 
-	static const int RENDER_MODE_3D = 0;
-	static const int RENDER_MODE_2D = 1;
-	static const int RENDER_MODE_2D_ASPECT_OFF = 2;
-	static const int RENDER_MODE_2D_ABSOLUTE = 3;
-
 private:
+
+	std::string renderMode;
+	std::string aspectMode;
 
 	std::vector<Transform*> transforms;
 
